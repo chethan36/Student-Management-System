@@ -1,0 +1,5 @@
+export function Loading(){return <div className="grid min-h-40 place-items-center"><div className="h-8 w-8 animate-spin rounded-full border-4 border-brand-500 border-t-transparent"/></div>}
+export function Empty({children='No records found'}){return <div className="py-10 text-center text-sm text-slate-500">{children}</div>}
+export function Alert({message}){return message?<div className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">{message}</div>:null}
+export function Stat({label,value,detail}){return <div className="card"><p className="text-sm font-medium text-slate-500">{label}</p><p className="mt-2 text-3xl font-bold text-slate-900">{value}</p>{detail&&<p className="mt-1 text-xs text-slate-400">{detail}</p>}</div>}
+export function PageTitle({title,subtitle,action}){return <div className="mb-6 flex flex-wrap items-end justify-between gap-3"><div><h1 className="text-2xl font-bold text-slate-900">{title}</h1><p className="mt-1 text-sm text-slate-500">{subtitle}</p></div>{action}</div>}

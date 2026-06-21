@@ -1,0 +1,25 @@
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: student_management
+      MYSQL_USER: sms_user
+      MYSQL_PASSWORD: ${DB_PASSWORD:-sms_password}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
+    volumes: [mysql_data:/var/lib/mysql]
+    healthcheck: {test: [CMD, mysqladmin, ping, -h, localhost, -uroot, -p$${MYSQL_ROOT_PASSWORD}], interval: 5s, timeout: 5s, retries: 20}
+  backend:
+    build: ./backend
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/student_management?allowPublicKeyRetrieval=true&useSSL=false
+      DB_USERNAME: sms_user
+      DB_PASSWORD: ${DB_PASSWORD:-sms_password}
+      JWT_SECRET: ${JWT_SECRET:-replace-this-with-a-long-random-production-secret-key}
+      CORS_ORIGIN: http://localhost:3000
+    depends_on: {mysql: {condition: service_healthy}}
+    ports: ["8080:8080"]
+  frontend:
+    build: ./frontend
+    depends_on: [backend]
+    ports: ["3000:80"]
+volumes: {mysql_data: {}}

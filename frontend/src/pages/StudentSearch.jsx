@@ -1,0 +1,5 @@
+import {useEffect,useState} from 'react'
+import {Search} from 'lucide-react'
+import api from '../services/api'
+import {Empty,PageTitle} from '../components/UI'
+export default function StudentSearch(){const [q,setQ]=useState(''),[students,setStudents]=useState([]);useEffect(()=>{const timer=setTimeout(()=>api.get('/faculty/students',{params:{search:q,size:25}}).then(r=>setStudents(r.data.content)),250);return()=>clearTimeout(timer)},[q]);return <><PageTitle title="Student directory" subtitle="Search by name, USN, or department"/><div className="relative mb-4 max-w-md"><Search size={17} className="absolute left-3 top-2.5 text-slate-400"/><input autoFocus className="field pl-9" value={q} onChange={e=>setQ(e.target.value)} placeholder="Start typing to search..."/></div><div className="table-wrap">{students.length===0?<Empty/>:<table><thead><tr><th>USN</th><th>Name</th><th>Department</th><th>Semester</th></tr></thead><tbody>{students.map(s=><tr key={s.id}><td className="font-semibold">{s.usn}</td><td>{s.name}</td><td>{s.department.name}</td><td>{s.semester}</td></tr>)}</tbody></table>}</div></>}

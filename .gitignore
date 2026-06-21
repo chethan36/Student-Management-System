@@ -1,0 +1,12 @@
+.env
+.idea/
+.vscode/
+.tools/
+.DS_Store
+**/.DS_Store
+backend/target/
+backend/data/
+ai-service/.venv/
+frontend/node_modules/
+frontend/dist/
+*.log
