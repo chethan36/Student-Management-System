@@ -184,8 +184,5 @@ def chat():
         return jsonify({"error": str(e)}), 400
 
 
-import os
-
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5001))
-    app.run(port=port, host="0.0.0.0")
+    app.run(port=5001, host="0.0.0.0")

@@ -11,21 +11,18 @@ const links = {
     ['/admin/students', 'Students', GraduationCap],
     ['/admin/faculty', 'Faculty', Users],
     ['/admin/catalog', 'Catalog', BookOpen],
-    ['/admin/ai', 'AI Intelligence', Brain],
-    ['/admin/placement', 'Placement Intelligence', Briefcase]
+    ['/admin/ai', 'AI Intelligence', Brain]
   ],
   FACULTY: [
     ['/faculty', 'My courses', BookOpen],
     ['/faculty/students', 'Student search', Users],
     ['/faculty/assignments', 'Assignments', FileText],
-    ['/faculty/ai', 'AI Intelligence', Brain],
-    ['/faculty/placement', 'Placement Intelligence', Briefcase]
+    ['/faculty/ai', 'AI Intelligence', Brain]
   ],
   STUDENT: [
     ['/student', 'My dashboard', LayoutDashboard],
     ['/student/profile', 'Profile', GraduationCap],
-    ['/student/assignments', 'Assignments', FileText],
-    ['/student/placement', 'Placement Intelligence', Briefcase]
+    ['/student/assignments', 'Assignments', FileText]
   ]
 }
 
