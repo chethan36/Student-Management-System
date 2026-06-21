@@ -37,8 +37,9 @@ services:
   # --------------------------------------------------
   # 3. React Frontend (Static Site)
   # --------------------------------------------------
-  - type: static
+  - type: web
     name: campuscore-frontend
+    env: static
     rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: frontend/dist
