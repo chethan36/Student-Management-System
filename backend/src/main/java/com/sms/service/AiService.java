@@ -19,13 +19,19 @@ public class AiService {
     private final MarkRepository marks;
     private final RestTemplate restTemplate;
 
-    private static final String AI_SERVICE_URL = "http://localhost:5001";
+    private final String aiServiceUrl;
 
     public AiService(StudentRepository s, AttendanceRepository a, MarkRepository m) {
         students = s;
         attendance = a;
         marks = m;
         restTemplate = new RestTemplate();
+        
+        String url = System.getenv("AI_SERVICE_URL");
+        if (url == null || url.trim().isEmpty()) {
+            url = "http://localhost:5001";
+        }
+        this.aiServiceUrl = url;
     }
 
     public Map<String, Object> getStudentInsights(Long studentId) {
@@ -173,7 +179,7 @@ public class AiService {
         payload.put("role", role);
 
         try {
-            Map<?, ?> response = restTemplate.postForObject(AI_SERVICE_URL + "/chat", payload, Map.class);
+            Map<?, ?> response = restTemplate.postForObject(this.aiServiceUrl + "/chat", payload, Map.class);
             return (String) response.get("response");
         } catch (Exception e) {
             return "Campus AI chatbot engine is temporarily offline. Heuristic fallback: I cannot parse your query without connection to the Python NLP microservice. Please check that port 5001 is active.";
@@ -234,7 +240,7 @@ public class AiService {
         body.put("prev_gpa", prevGpa);
 
         try {
-            return restTemplate.postForObject(AI_SERVICE_URL + "/predict-attendance-risk", body, Map.class);
+            return restTemplate.postForObject(this.aiServiceUrl + "/predict-attendance-risk", body, Map.class);
         } catch (Exception e) {
             // Heuristic Fallback
             String risk = "Low";
@@ -257,7 +263,7 @@ public class AiService {
         body.put("assignment_score_pct", assignmentRate);
 
         try {
-            return restTemplate.postForObject(AI_SERVICE_URL + "/predict-grade", body, Map.class);
+            return restTemplate.postForObject(this.aiServiceUrl + "/predict-grade", body, Map.class);
         } catch (Exception e) {
             // Heuristic Fallback
             double avg = (attendancePct + internalsPct + assignmentRate) / 3.0;
