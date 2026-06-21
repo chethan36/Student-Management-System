@@ -31,6 +31,8 @@ services:
       # Link private network connection to the AI Flask microservice
       - key: AI_SERVICE_URL
         value: http://campuscore-ai-service:5001
+      - key: CORS_ORIGIN
+        value: https://campuscore-frontend.onrender.com
 
   # --------------------------------------------------
   # 3. React Frontend (Static Site)
