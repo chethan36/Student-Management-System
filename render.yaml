@@ -39,7 +39,7 @@ services:
     name: campuscore-frontend
     rootDir: frontend
     buildCommand: npm install && npm run build
-    staticPublishPath: dist
+    staticPublishPath: frontend/dist
     # Point the build script to use your backend service's URL (e.g. https://campuscore-backend.onrender.com/api)
     envVars:
       - key: VITE_API_URL
