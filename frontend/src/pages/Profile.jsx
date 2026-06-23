@@ -62,8 +62,8 @@ export default function Profile() {
   const attendancePct = totalClasses ? Math.round((presentClasses / totalClasses) * 100) : 100
 
   // Segregate marks
-  const internalMarks = marks.filter(m => !m.assessment.toLowerCase().contains('assignment'))
-  const assignments = marks.filter(m => m.assessment.toLowerCase().contains('assignment'))
+  const internalMarks = marks.filter(m => !m.assessment.toLowerCase().includes('assignment'))
+  const assignments = marks.filter(m => m.assessment.toLowerCase().includes('assignment'))
 
   // Attendance Chart Data
   const attendanceData = courses.map(e => {
