@@ -211,8 +211,8 @@ public class AiService {
             aiInsights.add("Healthy margins: No students are currently forecasted to receive a failing grade.");
         }
 
-        if (highRiskCount > 0) {
-            aiInsights.add(String.format("Intervention Advice: %d students identified with critical risk score. Attendance/assignment follow-up required.", highRiskCount));
+        if (highRisk > 0) {
+            aiInsights.add(String.format("Intervention Advice: %d students identified with critical risk score. Attendance/assignment follow-up required.", highRisk));
         }
 
         List<Student> anomalies = allStudents.stream().filter(s -> {
@@ -231,7 +231,7 @@ public class AiService {
         for (Course c : allCourses) {
             List<Enrollment> courseEnrollments = enrollmentRepository.findByCourseId(c.getId());
             if (courseEnrollments.isEmpty()) continue;
-            List<Attendance> courseAttRecords = attendanceRepository.findByEnrollmentIn(courseEnrollments);
+            List<Attendance> courseAttRecords = attendance.findByEnrollmentIn(courseEnrollments);
             if (!courseAttRecords.isEmpty()) {
                 long present = courseAttRecords.stream().filter(att -> att.getStatus() == Attendance.Status.PRESENT).count();
                 double courseAtt = (present * 100.0) / courseAttRecords.size();
