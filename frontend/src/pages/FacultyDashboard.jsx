@@ -11,6 +11,7 @@ export default function FacultyDashboard() {
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10))
   const [mark, setMark] = useState({ enrollmentId: '', assessment: 'Internal 1', score: '', maxScore: '50', grade: '' })
   const [aiDashboard, setAiDashboard] = useState(null)
+  const [facultyStats, setFacultyStats] = useState(null)
   
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
@@ -18,12 +19,14 @@ export default function FacultyDashboard() {
 
   const loadData = async () => {
     try {
-      const [coursesRes, aiRes] = await Promise.all([
+      const [coursesRes, aiRes, statsRes] = await Promise.all([
         api.get('/faculty/courses'),
-        api.get('/ai/dashboard')
+        api.get('/ai/dashboard'),
+        api.get('/faculty/stats')
       ])
       setCourses(coursesRes.data)
       setAiDashboard(aiRes.data)
+      setFacultyStats(statsRes.data)
     } catch (e) {
       console.error(e)
       setError('Failed to retrieve faculty dashboard data.')
@@ -63,9 +66,13 @@ export default function FacultyDashboard() {
       })
       setMessage('Attendance roster saved successfully!')
       setError('')
-      // Refresh AI data to update predictions
-      const aiRes = await api.get('/ai/dashboard')
+      // Refresh AI data and stats
+      const [aiRes, statsRes] = await Promise.all([
+        api.get('/ai/dashboard'),
+        api.get('/faculty/stats')
+      ])
       setAiDashboard(aiRes.data)
+      setFacultyStats(statsRes.data)
     } catch (e) {
       setError(errorMessage(e))
     }
@@ -94,9 +101,13 @@ export default function FacultyDashboard() {
         maxScore: '50',
         grade: ''
       })
-      // Refresh AI
-      const aiRes = await api.get('/ai/dashboard')
+      // Refresh AI and stats
+      const [aiRes, statsRes] = await Promise.all([
+        api.get('/ai/dashboard'),
+        api.get('/faculty/stats')
+      ])
       setAiDashboard(aiRes.data)
+      setFacultyStats(statsRes.data)
     } catch (e) {
       setError(errorMessage(e))
     }
@@ -121,11 +132,53 @@ export default function FacultyDashboard() {
 
       {/* Aggregate Overview KPI Statistics */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat label="Assigned Curriculum Courses" value={courses.length} detail="Active syllabus subjects" />
-        <Stat label="Monitored Students" value={totalStudentsMonitored} detail="Enrolled candidates in courses" />
-        <Stat label="High Risk Alerts" value={highRiskStudents.length} detail="Detention probability > 75%" />
-        <Stat label="Top Performers" value={aiDashboard?.topPerformers?.length || 0} detail="Predicted to score A / A+ grades" />
+        <Stat label="Total Enrolled Students" value={facultyStats?.totalStudents || 0} detail="Unique monitored candidates" />
+        <Stat label="Assigned Curriculum Courses" value={facultyStats?.totalCourses || 0} detail="Active syllabus subjects" />
+        <Stat label="Average Attendance Rate" value={facultyStats ? `${facultyStats.averageAttendance}%` : '0%'} detail="Course-wide average attendance" />
+        <Stat label="Pending Assignments" value={facultyStats?.pendingAssignments || 0} detail="Awaiting evaluation submissions" />
       </div>
+
+      {/* Course Analytics Section */}
+      {facultyStats && facultyStats.courseAnalytics && (
+        <div className="card dark:bg-slate-900 border dark:border-slate-800 space-y-4">
+          <h3 className="font-bold text-slate-850 dark:text-slate-150 flex items-center gap-1.5">
+            <TrendingUp size={18} className="text-brand-500" />
+            Curriculum Course Performance Analytics
+          </h3>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Course Code</th>
+                  <th>Course Name</th>
+                  <th>Students Enrolled</th>
+                  <th>Avg Attendance</th>
+                  <th>Avg Evaluation Score</th>
+                </tr>
+              </thead>
+              <tbody>
+                {facultyStats.courseAnalytics.map((cAnalytic, idx) => (
+                  <tr key={idx}>
+                    <td className="font-bold text-brand-600 dark:text-brand-400">{cAnalytic.courseCode}</td>
+                    <td className="font-semibold text-slate-800 dark:text-slate-200">{cAnalytic.courseName}</td>
+                    <td className="font-semibold">{cAnalytic.studentsCount} Students</td>
+                    <td>
+                      <span className={`font-semibold px-2 py-0.5 rounded text-xs ${
+                        cAnalytic.avgAttendance < 75.0 
+                          ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300' 
+                          : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
+                      }`}>
+                        {cAnalytic.avgAttendance}%
+                      </span>
+                    </td>
+                    <td className="font-bold text-violet-600 dark:text-violet-400">{cAnalytic.avgScore}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* AI Intelligence Insights Alerts & Charts */}
       {aiDashboard && (

@@ -1,5 +1,6 @@
 package com.sms.repository;
 
+import com.sms.entity.Assignment;
 import com.sms.entity.AssignmentSubmission;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -10,5 +11,6 @@ import java.util.Optional;
 public interface AssignmentSubmissionRepository extends JpaRepository<AssignmentSubmission, Long> {
     Optional<AssignmentSubmission> findByAssignmentIdAndStudentId(Long assignmentId, Long studentId);
     List<AssignmentSubmission> findByAssignmentId(Long assignmentId);
+    List<AssignmentSubmission> findByAssignmentIn(List<Assignment> assignments);
     List<AssignmentSubmission> findByStudentId(Long studentId);
 }

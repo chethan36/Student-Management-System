@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Download, AlertTriangle, Trophy, Brain, Activity, FileSpreadsheet, Sparkles } from 'lucide-react'
+import { Download, AlertTriangle, Trophy, Brain, Activity, FileSpreadsheet, Sparkles, TrendingUp, Users } from 'lucide-react'
 import api from '../services/api'
 import { Loading, PageTitle, Stat } from '../components/UI'
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell, LineChart, Line } from 'recharts'
@@ -107,17 +107,38 @@ export default function AiInsightsDashboard() {
         </div>
       </div>
 
+      {/* AI Dynamic Insights Panel */}
+      <div className="card bg-gradient-to-r from-indigo-50/50 to-violet-50/50 dark:from-slate-900 dark:to-slate-900/60 border border-violet-100 dark:border-slate-800 p-6 space-y-4">
+        <h3 className="font-extrabold text-slate-850 dark:text-slate-150 flex items-center gap-2">
+          <Sparkles className="text-violet-500 shrink-0" size={18} />
+          AI System Operational Insights & Recommendations
+        </h3>
+        <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+          {data.aiInsights && data.aiInsights.map((insight, idx) => (
+            <div 
+              key={idx} 
+              className="p-3 bg-white/60 dark:bg-slate-950/40 rounded-xl border border-slate-100 dark:border-slate-850 hover:shadow-sm hover:border-brand-500/30 transition duration-150 flex gap-2 text-xs"
+            >
+              <div className="p-1 rounded bg-violet-100 dark:bg-violet-950/50 text-violet-600 dark:text-violet-400 h-fit shrink-0">
+                <Brain size={12} />
+              </div>
+              <span className="text-slate-650 dark:text-slate-350 leading-relaxed font-semibold">{insight}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Visual Analytics Charts */}
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2">
         {/* Risk Distribution Chart */}
-        <div className="card dark:bg-slate-900 border dark:border-slate-800 flex flex-col justify-between">
+        <div className="card dark:bg-slate-900 border dark:border-slate-800 flex flex-col justify-between h-[360px]">
           <h3 className="font-bold text-slate-850 dark:text-slate-150 mb-2 flex items-center gap-1.5">
-            <Activity size={16} className="text-emerald-500" /> Attendance Detention Risk
+            <Activity size={16} className="text-emerald-500" /> Attendance Detention Risk (Risk Distribution Pie Chart)
           </h3>
           {riskPieData.length === 0 ? (
             <div className="py-20 text-center text-slate-400">No predictions recorded</div>
           ) : (
-            <div className="h-60 w-full flex items-center justify-center">
+            <div className="h-64 w-full flex items-center justify-center">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -133,7 +154,7 @@ export default function AiInsightsDashboard() {
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={{ background: 'var(--tw-slate-900)', border: 'none', borderRadius: '8px' }} />
+                  <Tooltip contentStyle={{ background: '#0f172a', border: 'none', borderRadius: '8px' }} />
                   <Legend verticalAlign="bottom" height={36} />
                 </PieChart>
               </ResponsiveContainer>
@@ -142,19 +163,94 @@ export default function AiInsightsDashboard() {
         </div>
 
         {/* Grade Distribution Bar Chart */}
-        <div className="card md:col-span-2 dark:bg-slate-900 border dark:border-slate-800 flex flex-col justify-between">
+        <div className="card dark:bg-slate-900 border dark:border-slate-800 flex flex-col justify-between h-[360px]">
           <h3 className="font-bold text-slate-850 dark:text-slate-150 mb-2 flex items-center gap-1.5">
-            <Brain size={16} className="text-violet-500" /> Grade Forecast Distribution
+            <Brain size={16} className="text-violet-500" /> Grade Forecast Distribution (Grade Distribution Bar Chart)
           </h3>
-          <div className="h-60 w-full">
+          <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={gradeBarData}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-slate-100 dark:stroke-slate-800" />
                 <XAxis dataKey="grade" stroke="currentColor" className="text-[10px] text-slate-400" />
                 <YAxis stroke="currentColor" className="text-[10px] text-slate-400" />
-                <Tooltip contentStyle={{ background: 'var(--tw-slate-900)', border: 'none', borderRadius: '8px' }} />
+                <Tooltip contentStyle={{ background: '#0f172a', border: 'none', borderRadius: '8px' }} />
                 <Bar dataKey="Students" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
               </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Attendance Trend Line Chart */}
+        <div className="card dark:bg-slate-900 border dark:border-slate-800 flex flex-col justify-between h-[360px]">
+          <h3 className="font-bold text-slate-850 dark:text-slate-150 mb-2 flex items-center gap-1.5">
+            <TrendingUp size={16} className="text-blue-500" /> Daily Campus Attendance Trend (Attendance Trend Line Chart)
+          </h3>
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={data.attendanceTrend || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-slate-100 dark:stroke-slate-800" />
+                <XAxis dataKey="date" stroke="currentColor" className="text-[9px] text-slate-400" />
+                <YAxis domain={[0, 100]} stroke="currentColor" className="text-[10px] text-slate-400" />
+                <Tooltip contentStyle={{ background: '#0f172a', border: 'none', borderRadius: '8px' }} />
+                <Line type="monotone" dataKey="attendance" name="Avg Attendance %" stroke="#3b82f6" strokeWidth={3} dot={{ r: 2 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Assignment Completion Chart */}
+        <div className="card dark:bg-slate-900 border dark:border-slate-800 flex flex-col justify-between h-[360px]">
+          <h3 className="font-bold text-slate-850 dark:text-slate-150 mb-2 flex items-center gap-1.5">
+            <Trophy size={16} className="text-amber-500" /> Course Assignment Completion Rates (Assignment Completion Chart)
+          </h3>
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={data.assignmentCompletion || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-slate-100 dark:stroke-slate-800" />
+                <XAxis dataKey="course" stroke="currentColor" className="text-[10px] text-slate-400" />
+                <YAxis domain={[0, 100]} stroke="currentColor" className="text-[10px] text-slate-400" />
+                <Tooltip contentStyle={{ background: '#0f172a', border: 'none', borderRadius: '8px' }} />
+                <Bar dataKey="completionRate" name="Completion Rate %" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Department Performance Comparison */}
+        <div className="card dark:bg-slate-900 border dark:border-slate-800 flex flex-col justify-between h-[360px]">
+          <h3 className="font-bold text-slate-850 dark:text-slate-150 mb-2 flex items-center gap-1.5">
+            <Users size={16} className="text-brand-500" /> Department Performance Breakdown (Department Performance Comparison)
+          </h3>
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={data.departmentPerformance || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-slate-100 dark:stroke-slate-800" />
+                <XAxis dataKey="department" stroke="currentColor" className="text-[10px] text-slate-400" />
+                <YAxis yAxisId="left" orientation="left" stroke="#8b5cf6" domain={[0, 10]} className="text-[9px]" />
+                <YAxis yAxisId="right" orientation="right" stroke="#10b981" domain={[0, 100]} className="text-[9px]" />
+                <Tooltip contentStyle={{ background: '#0f172a', border: 'none', borderRadius: '8px' }} />
+                <Legend />
+                <Bar yAxisId="left" dataKey="avgGpa" name="Avg CGPA" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+                <Bar yAxisId="right" dataKey="avgAttendance" name="Avg Attendance %" fill="#10b981" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Monthly Academic Performance Trend */}
+        <div className="card dark:bg-slate-900 border dark:border-slate-800 flex flex-col justify-between h-[360px]">
+          <h3 className="font-bold text-slate-850 dark:text-slate-150 mb-2 flex items-center gap-1.5">
+            <TrendingUp size={16} className="text-rose-500" /> Academic score Monthly Average (Monthly Academic Performance Trend)
+          </h3>
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={data.monthlyPerformanceTrend || []} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-slate-100 dark:stroke-slate-800" />
+                <XAxis dataKey="month" stroke="currentColor" className="text-[10px] text-slate-400" />
+                <YAxis domain={[50, 100]} stroke="currentColor" className="text-[10px] text-slate-400" />
+                <Tooltip contentStyle={{ background: '#0f172a', border: 'none', borderRadius: '8px' }} />
+                <Line type="monotone" dataKey="score" name="Avg Score %" stroke="#ec4899" strokeWidth={3} dot={{ r: 4 }} />
+              </LineChart>
             </ResponsiveContainer>
           </div>
         </div>

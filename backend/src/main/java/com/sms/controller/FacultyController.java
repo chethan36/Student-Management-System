@@ -17,4 +17,5 @@ public class FacultyController {
  @PostMapping("/marks") Mark marks(Authentication a,@Valid @RequestBody MarkRequest r){return service.mark(a.getName(),r);}
  @GetMapping("/students") Page<Student> students(@RequestParam(defaultValue="")String search,@PageableDefault(size=10,sort="name")Pageable p){return service.search(search,p);}
  @GetMapping("/students/{id}/performance") List<Mark> performance(Authentication a,@PathVariable Long id){return service.performance(a.getName(),id);}
+ @GetMapping("/stats") public java.util.Map<String, Object> stats(Authentication a){return service.getFacultyStats(a.getName());}
 }
